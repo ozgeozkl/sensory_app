@@ -11,33 +11,69 @@ class VisualsScreen extends StatefulWidget {
   @override
   State<VisualsScreen> createState() => _VisualsScreenState();
 }
-
 class _VisualsScreenState extends State<VisualsScreen> {
   final PageController _pageController = PageController();
+
+  void _nextPage() {
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _prevPage() {
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      title: "Görsel Deneyimler",
+      title: "Kozmos", 
       body: Stack(
         children: [
           PageView(
             controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(), 
             children: const [
-              CloudyPage(),      
-              StarryNightPage(), 
-              FluidFollowPage(), 
+              CloudyPage(),
+              StarryNightPage(),
+              FluidFollowPage(),
             ],
           ),
           
           Positioned(
-            bottom: 45, left: 20,
-            child: Icon(Icons.arrow_back_ios_rounded, color: Colors.white.withOpacity(0.5), size: 36),
+            bottom: 40, left: 20,
+            child: GestureDetector(
+              onTap: _prevPage,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+                ),
+                child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 28),
+              ),
+            ),
           ),
           
           Positioned(
-            bottom: 45, right: 20,
-            child: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withOpacity(0.5), size: 36),
+            bottom: 40, right: 20,
+            child: GestureDetector(
+              onTap: _nextPage,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+                ),
+                child: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 28),
+              ),
+            ),
           ),
         ],
       ),
@@ -124,12 +160,12 @@ class _CloudyPageState extends State<CloudyPage> with SingleTickerProviderStateM
         ),
         
         // SAYAÇ VE YÖNERGE BÖLÜMÜ
-        Positioned(
-          top: 30, left: 0, right: 0,
+Positioned(
+          top: 60, left: 0, right: 0,
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(30),
@@ -137,13 +173,15 @@ class _CloudyPageState extends State<CloudyPage> with SingleTickerProviderStateM
                 ),
                 child: Text(
                   "Dağıtılan Bulut: $_poppedClouds",
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                  textAlign: TextAlign.center, // Yazıyı ortaladık
+                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
-                "Dağıtmak için bulutlara dokun", 
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 1.5)
+                "Dağıtmak için bulutlara dokun",
+                textAlign: TextAlign.center, // Yazıyı ortaladık
+                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12),
               ),
             ],
           ),
@@ -217,29 +255,31 @@ class _StarryNightPageState extends State<StarryNightPage> {
             
             // SAYAÇ VE YÖNERGE BÖLÜMÜ
             Positioned(
-              top: 30, left: 0, right: 0,
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
-                    ),
-                    child: Text(
-                      "Kayan Yıldız: $_shootingStars",
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.2),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "Yıldız kaydırmak için gökyüzüne dokun", 
-                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 1.5)
-                  ),
-                ],
+          top: 60, left: 0, right: 0,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+                ),
+                child: Text(
+                  "Kayan Yıldız: $_shootingStars",
+                  textAlign: TextAlign.center, // Yazıyı ortaladık
+                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
+              const SizedBox(height: 8),
+              Text(
+                "Yıldız kaydırmak için gökyüzüne dokun",
+                textAlign: TextAlign.center, // Yazıyı ortaladık
+                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+              ),
+            ],
+          ),
+        ),
           ],
         ),
       ),
@@ -363,15 +403,15 @@ class _FluidFollowPageState extends State<FluidFollowPage> with SingleTickerProv
               ),
             ),
             Positioned(
-              top: 40, left: 0, right: 0,
-              child: Center(
-                child: Text(
-                  "Işığı yönlendirmek için ekrana dokun",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 1.5),
-                ),
-              ),
+          top: 60, left: 0, right: 0,
+          child: Center(
+            child: Text(
+              "Işığı yönlendirmek için ekrana dokun",
+              textAlign: TextAlign.center, // Yazıyı ortaladık
+              style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
             ),
+          ),
+        ),
           ],
         ),
       ),

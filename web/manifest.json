@@ -1,6 +1,5 @@
-{
-    "name": "sensory_app",
-    "short_name": "sensory_app",
+{"name": "Kozmos",
+  "short_name": "Kozmos",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
