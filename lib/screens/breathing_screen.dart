@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async'; // Timer için eklendi
 import '../widgets/base_scaffold.dart';
 
 class BreathingScreen extends StatefulWidget {
@@ -10,13 +11,16 @@ class BreathingScreen extends StatefulWidget {
 class _BreathingScreenState extends State<BreathingScreen> {
   bool _isActive = false;
   double _circleSize = 150.0;
-  int _animationDuration = 1; 
+  int _animationDuration = 2; 
   String _mainText = "Başlamak için dokun";
-  String _subText = "Kutu Nefesi (4-4-4-4 Tekniği)";
+  
+  Timer? _timer;
+  int _secondsLeft = 4;
+  int _currentPhase = 0; // 0: Al, 1: Tut, 2: Ver, 3: Bekle
 
   @override
   void dispose() {
-    _isActive = false; 
+    _timer?.cancel(); // Sayfadan çıkıldığında sayacı durdur
     super.dispose();
   }
 
@@ -29,72 +33,70 @@ class _BreathingScreenState extends State<BreathingScreen> {
   }
 
   void _stopBreathing() {
+    _timer?.cancel();
     setState(() {
       _isActive = false;
       _circleSize = 150.0;
       _animationDuration = 2; 
       _mainText = "Başlamak için dokun";
-      _subText = "Kutu Nefesi (4-4-4-4 Tekniği)";
     });
   }
 
   void _startBreathing() {
     setState(() {
       _isActive = true;
+      _currentPhase = 0;
+      _secondsLeft = 4;
     });
-    _runBreathingCycle();
+    _updatePhaseUI();
+
+    // Saniye saniye geri sayan ve aşamaları yöneten Timer
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_secondsLeft > 1) {
+          _secondsLeft--;
+        } else {
+          _currentPhase = (_currentPhase + 1) % 4; // 0, 1, 2, 3 arası döngü
+          _secondsLeft = 4; // Her aşama 4 saniye
+          _updatePhaseUI();
+        }
+      });
+    });
   }
 
-  void _runBreathingCycle() async {
-    while (_isActive) {
-      if (!mounted) return;
-
-      setState(() {
+  void _updatePhaseUI() {
+    switch (_currentPhase) {
+      case 0:
         _circleSize = 300.0; 
         _animationDuration = 4;
-        _mainText = "Nefes Al...";
-        _subText = "Burnundan yavaşça (4 sn)";
-      });
-      await Future.delayed(const Duration(seconds: 4));
-      if (!_isActive || !mounted) break;
-
-      setState(() {
-        _animationDuration = 4; 
-        _mainText = "Tut...";
-        _subText = "Nefesini içeride tut (4 sn)";
-      });
-      await Future.delayed(const Duration(seconds: 4));
-      if (!_isActive || !mounted) break;
-
-      setState(() {
+        _mainText = "Nefes Al";
+        break;
+      case 1:
+        _animationDuration = 4;
+        _mainText = "Tut";
+        break;
+      case 2:
         _circleSize = 150.0; 
         _animationDuration = 4;
-        _mainText = "Nefes Ver...";
-        _subText = "Ağzından yavaşça (4 sn)";
-      });
-      await Future.delayed(const Duration(seconds: 4));
-      if (!_isActive || !mounted) break;
-
-      setState(() {
-        _animationDuration = 4; 
-        _mainText = "Bekle...";
-        _subText = "Nefes almadan bekle (4 sn)";
-      });
-      await Future.delayed(const Duration(seconds: 4));
+        _mainText = "Nefes Ver";
+        break;
+      case 3:
+        _animationDuration = 4;
+        _mainText = "Bekle";
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      title: "Nefes Akışı",
+      title: "Nefes Egzersizi",
       body: GestureDetector(
         onTap: _toggleBreathing,
         behavior: HitTestBehavior.opaque, 
         child: Center(
           child: Column(
             children: [
-              // 1. DÜZELTME: Üstten esnek boşluk (Ekranın üst kısmını dengeler)
               const Spacer(flex: 2), 
 
               AnimatedSwitcher(
@@ -103,29 +105,14 @@ class _BreathingScreenState extends State<BreathingScreen> {
                   _mainText,
                   key: ValueKey<String>(_mainText),
                   style: TextStyle(
-                    fontSize: 34,
+                    fontSize: 36,
                     fontWeight: FontWeight.w300,
                     color: Colors.teal.shade100,
                     letterSpacing: 2.0,
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
               
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: Text(
-                  _subText,
-                  key: ValueKey<String>(_subText),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.white54,
-                  ),
-                ),
-              ),
-              
-              // 2. DÜZELTME: Metin ile çember arasında esnek boşluk
               const Spacer(flex: 1), 
 
               AnimatedContainer(
@@ -145,19 +132,19 @@ class _BreathingScreenState extends State<BreathingScreen> {
                   ],
                 ),
                 child: Center(
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 500),
-                    opacity: _isActive ? 0.0 : 1.0, 
-                    child: const Icon(
-                      Icons.play_arrow_rounded,
-                      size: 60,
-                      color: Colors.white54,
-                    ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _isActive 
+                      ? Text(
+                          "$_secondsLeft", // ORTADAKİ DEV SAYAÇ
+                          key: ValueKey<int>(_secondsLeft),
+                          style: const TextStyle(fontSize: 64, fontWeight: FontWeight.w300, color: Colors.white),
+                        )
+                      : const Icon(Icons.play_arrow_rounded, size: 60, color: Colors.white54),
                   ),
                 ),
               ),
               
-              // 3. DÜZELTME: Mola Ver butonuna kadar alt kısımda esnek boşluk
               const Spacer(flex: 2), 
             ],
           ),

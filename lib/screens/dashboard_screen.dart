@@ -10,7 +10,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      title: "Nasıl Hissediyorsun?",
+      title: "Kozmos",
       showBackButton: false,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -20,7 +20,7 @@ class DashboardScreen extends StatelessWidget {
           children: [
             _buildMenuCard(
               context, 
-              title: "Sakinleştirici Sesler", 
+              title: "Sesler", 
               icon: Icons.water_drop_outlined, 
               color: Colors.blue.shade800,
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SoundsScreen()))
